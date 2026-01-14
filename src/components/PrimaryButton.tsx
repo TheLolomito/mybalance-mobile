@@ -16,14 +16,14 @@ export function PrimaryButton({ label, onPress }: PrimaryButtonProps) {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#1B6EF3',
-    borderRadius: 12,
+    backgroundColor: '#34F5C5',
+    borderRadius: 16,
     paddingVertical: 14,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     alignItems: 'center',
   },
   label: {
-    color: '#FFFFFF',
+    color: '#2F455C',
     fontSize: 16,
     fontWeight: '600',
   },

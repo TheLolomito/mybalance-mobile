@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -7,26 +7,35 @@ import { RootStackParamList } from '../navigation/RootNavigator';
 
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
+const cards = [
+  { title: 'Balance General', subtitle: 'Resumen total', accent: '#1DCDFE' },
+  { title: 'Ingresos', subtitle: 'Flujo positivo', accent: '#21D0B2' },
+  { title: 'Gastos', subtitle: 'Salidas del mes', accent: '#34F5C5' },
+  { title: 'Otros', subtitle: 'Notas y extras', accent: '#1DCDFE' },
+];
+
 export function HomeScreen({ navigation }: HomeScreenProps) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.title}>Hola, Ana 👋</Text>
-        <Text style={styles.subtitle}>Tu balance está al día.</Text>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Resumen del mes</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Ingresos</Text>
-            <Text style={styles.value}>$2,450</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Gastos</Text>
-            <Text style={styles.value}>$1,120</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Ahorro</Text>
-            <Text style={styles.value}>$1,330</Text>
-          </View>
+        <View style={styles.header}>
+          <View style={styles.headerSide} />
+          <Text style={styles.title}>My Balance</Text>
+          <Pressable style={styles.settingsButton}>
+            <Text style={styles.settingsIcon}>⚙️</Text>
+          </Pressable>
+        </View>
+        <Text style={styles.subtitle}>Tu panel financiero en un vistazo</Text>
+        <View style={styles.cards}>
+          {cards.map((card) => (
+            <View key={card.title} style={[styles.card, { borderColor: card.accent }]}>
+              <View style={[styles.cardAccent, { backgroundColor: card.accent }]} />
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>{card.title}</Text>
+                <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
+              </View>
+            </View>
+          ))}
         </View>
         <PrimaryButton label="Cerrar sesión" onPress={() => navigation.replace('Login')} />
       </View>
@@ -37,46 +46,75 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F5F6FA',
+    backgroundColor: '#2F455C',
   },
   container: {
     flex: 1,
     padding: 24,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  headerSide: {
+    width: 40,
+    height: 40,
+  },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '700',
-    color: '#0B1B2B',
-    marginBottom: 6,
+    color: '#34F5C5',
+    textAlign: 'center',
+    flex: 1,
+  },
+  settingsButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#1DCDFE',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  settingsIcon: {
+    fontSize: 18,
   },
   subtitle: {
     fontSize: 16,
-    color: '#52606D',
+    color: '#E6F9F5',
     marginBottom: 20,
+    textAlign: 'center',
+  },
+  cards: {
+    gap: 14,
+    marginBottom: 24,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-    gap: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#243849',
+    borderRadius: 18,
+    borderWidth: 1,
+    padding: 16,
+    gap: 14,
+  },
+  cardAccent: {
+    width: 10,
+    height: 44,
+    borderRadius: 6,
+  },
+  cardContent: {
+    flex: 1,
+    gap: 4,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2933',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  label: {
-    fontSize: 14,
-    color: '#52606D',
-  },
-  value: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1B6EF3',
+    fontWeight: '700',
+    color: '#E6F9F5',
+  },
+  cardSubtitle: {
+    fontSize: 13,
+    color: '#BEEFE6',
   },
 });

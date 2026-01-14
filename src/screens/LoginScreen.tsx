@@ -8,33 +8,23 @@ import { RootStackParamList } from '../navigation/RootNavigator';
 export type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 export function LoginScreen({ navigation }: LoginScreenProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.title}>Bienvenido</Text>
-        <Text style={styles.subtitle}>Ingresa con tu cuenta para continuar</Text>
+        <Text style={styles.title}>My Balance</Text>
+        <Text style={styles.subtitle}>Tu gestión personal empieza aquí</Text>
         <View style={styles.form}>
-          <Text style={styles.label}>Correo</Text>
+          <Text style={styles.label}>Nombre o apodo</Text>
           <TextInput
             style={styles.input}
-            placeholder="tu@email.com"
-            keyboardType="email-address"
+            placeholder="¿Cómo quieres que te llame?"
             autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
+            value={name}
+            onChangeText={setName}
           />
-          <Text style={styles.label}>Contraseña</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="••••••••"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-          <PrimaryButton label="Entrar" onPress={() => navigation.replace('Home')} />
+          <PrimaryButton label="Iniciar sesión" onPress={() => navigation.replace('Home')} />
         </View>
       </View>
     </SafeAreaView>
@@ -44,7 +34,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F5F6FA',
+    backgroundColor: '#2F455C',
   },
   container: {
     flex: 1,
@@ -54,31 +44,35 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#0B1B2B',
+    color: '#34F5C5',
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#52606D',
+    color: '#E6F9F5',
     marginBottom: 32,
+    textAlign: 'center',
   },
   form: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    borderRadius: 16,
-    gap: 12,
+    backgroundColor: '#1DCDFE',
+    padding: 22,
+    borderRadius: 20,
+    gap: 14,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1F2933',
+    color: '#2F455C',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#CBD2D9',
-    borderRadius: 10,
+    borderColor: '#2F455C',
+    borderRadius: 12,
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 12,
     fontSize: 16,
+    color: '#2F455C',
+    backgroundColor: '#E6F9F5',
   },
 });
