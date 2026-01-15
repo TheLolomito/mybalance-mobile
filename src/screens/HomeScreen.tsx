@@ -1,120 +1,167 @@
 import React from 'react';
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { PrimaryButton } from '../components/PrimaryButton';
-import { RootStackParamList } from '../navigation/RootNavigator';
-
-export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
-
-const cards = [
-  { title: 'Balance General', subtitle: 'Resumen total', accent: '#1DCDFE' },
-  { title: 'Ingresos', subtitle: 'Flujo positivo', accent: '#21D0B2' },
-  { title: 'Gastos', subtitle: 'Salidas del mes', accent: '#34F5C5' },
-  { title: 'Otros', subtitle: 'Notas y extras', accent: '#1DCDFE' },
-];
-
-export function HomeScreen({ navigation }: HomeScreenProps) {
+const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <View style={styles.headerSide} />
-          <Text style={styles.title}>My Balance</Text>
-          <Pressable style={styles.settingsButton}>
-            <Text style={styles.settingsIcon}>⚙️</Text>
-          </Pressable>
+          <View style={styles.avatar} />
+          <Text style={styles.title}>MyBalance</Text>
+          <View style={styles.settingsWrapper}>
+            <View style={styles.settingsIcon} />
+          </View>
         </View>
-        <Text style={styles.subtitle}>Tu panel financiero en un vistazo</Text>
-        <View style={styles.cards}>
-          {cards.map((card) => (
-            <View key={card.title} style={[styles.card, { borderColor: card.accent }]}>
-              <View style={[styles.cardAccent, { backgroundColor: card.accent }]} />
-              <View style={styles.cardContent}>
-                <Text style={styles.cardTitle}>{card.title}</Text>
-                <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
-              </View>
-            </View>
-          ))}
+
+        <Text style={styles.sectionTitle}>Dashboard</Text>
+
+        <View style={[styles.card, styles.mainCard]}>
+          <Text style={styles.cardLabel}>Balance</Text>
+          <Text style={styles.cardValue}>$0.00</Text>
+          <Text style={styles.cardMeta}>+0% month ever month</Text>
         </View>
-        <PrimaryButton label="Cerrar sesión" onPress={() => navigation.replace('Login')} />
+
+        <View style={styles.secondaryRow}>
+          <View style={[styles.card, styles.secondaryCard]}>
+            <Text style={styles.secondaryLabel}>Ingresos</Text>
+            <Text style={styles.secondaryValue}>$0.00</Text>
+            <Text style={styles.cardMeta}>+0% month ever month</Text>
+          </View>
+          <View style={[styles.card, styles.secondaryCard]}>
+            <Text style={styles.secondaryLabel}>Gastos</Text>
+            <Text style={styles.secondaryValue}>$0.00</Text>
+            <Text style={styles.cardMeta}>-0% month ever month</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.floatingButton}>
+        <Text style={styles.floatingButtonText}>+</Text>
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#2F455C',
+    backgroundColor: '#FFFFFF',
   },
   container: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 20,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    paddingTop: 6,
   },
-  headerSide: {
-    width: 40,
-    height: 40,
+  avatar: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#F2F2F2',
+    borderWidth: 1,
+    borderColor: '#D9D9D9',
   },
   title: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#34F5C5',
-    textAlign: 'center',
     flex: 1,
+    textAlign: 'center',
+    fontSize: 27,
+    fontWeight: '700',
+    color: '#111111',
   },
-  settingsButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#1DCDFE',
+  settingsWrapper: {
+    width: 34,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   settingsIcon: {
-    fontSize: 18,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: '#B0B0B0',
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#E6F9F5',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  cards: {
-    gap: 14,
-    marginBottom: 24,
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#111111',
+    marginTop: 16,
+    marginBottom: 12,
   },
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#243849',
-    borderRadius: 18,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
+    borderColor: '#D9D9D9',
+    borderRadius: 12,
     padding: 16,
-    gap: 14,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 5,
   },
-  cardAccent: {
-    width: 10,
-    height: 44,
-    borderRadius: 6,
-  },
-  cardContent: {
-    flex: 1,
-    gap: 4,
-  },
-  cardTitle: {
+  cardLabel: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#E6F9F5',
+    fontWeight: '600',
+    color: '#111111',
   },
-  cardSubtitle: {
-    fontSize: 13,
-    color: '#BEEFE6',
+  cardValue: {
+    fontSize: 40,
+    fontWeight: '700',
+    color: '#000000',
+    marginTop: 8,
+  },
+  cardMeta: {
+    fontSize: 12,
+    color: '#9A9A9A',
+    marginTop: 6,
+  },
+  mainCard: {
+    minHeight: 130,
+  },
+  secondaryRow: {
+    flexDirection: 'row',
+    gap: 16,
+    marginTop: 16,
+  },
+  secondaryCard: {
+    flex: 1,
+  },
+  secondaryLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#111111',
+  },
+  secondaryValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#000000',
+    marginTop: 8,
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 30,
+    alignSelf: 'center',
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D9D9D9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 5,
+  },
+  floatingButtonText: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#4A4A4A',
   },
 });
+
+export default HomeScreen;
