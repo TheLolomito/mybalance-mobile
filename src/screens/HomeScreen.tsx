@@ -164,4 +164,5 @@ const styles = StyleSheet.create({
   },
 });
 
+export { HomeScreen };
 export default HomeScreen;
