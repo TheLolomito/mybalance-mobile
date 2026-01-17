@@ -1,7 +1,7 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-const HomeScreen = () => {
+const DashboardScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -164,5 +164,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export { HomeScreen };
-export default HomeScreen;
+export { DashboardScreen };
+export default DashboardScreen;
