@@ -147,6 +147,8 @@ export function StartScreen({ navigation }: StartScreenProps) {
             placeholder="Day"
             placeholderTextColor="#A6A6A6"
             keyboardType="number-pad"
+            cursorColor="#000000"
+            underlineColorAndroid="transparent"
             value={day}
             onChangeText={(value) => {
               const numericValue = value.replace(/\D/g, '').slice(0, 2);
@@ -186,6 +188,8 @@ export function StartScreen({ navigation }: StartScreenProps) {
             placeholder="Month"
             placeholderTextColor="#A6A6A6"
             keyboardType="number-pad"
+            cursorColor="#000000"
+            underlineColorAndroid="transparent"
             value={month}
             onChangeText={(value) => {
               const numericValue = value.replace(/\D/g, '').slice(0, 2);
@@ -231,6 +235,8 @@ export function StartScreen({ navigation }: StartScreenProps) {
             placeholder="Year"
             placeholderTextColor="#A6A6A6"
             keyboardType="number-pad"
+            cursorColor="#000000"
+            underlineColorAndroid="transparent"
             value={year}
             onChangeText={(value) => {
               const numericValue = value.replace(/\D/g, '').slice(0, 4);
@@ -367,6 +373,9 @@ const styles = StyleSheet.create({
   },
   dateInput: {
     fontSize: 15,
+    fontWeight: '700',
+    textAlign: 'center',
+    textAlignVertical: 'center',
     textAlign: 'center',
     color: '#000000',
     paddingVertical: 0,
