@@ -380,6 +380,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     paddingVertical: 0,
     includeFontPadding: false,
+    textAlign: 'center',
+    color: '#000000',
+    paddingVertical: 0,
   },
   startButton: {
     position: 'absolute',
