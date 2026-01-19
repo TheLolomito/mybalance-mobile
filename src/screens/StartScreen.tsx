@@ -376,6 +376,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
     textAlignVertical: 'center',
+    textAlign: 'center',
     color: '#000000',
     paddingVertical: 0,
   },
