@@ -23,9 +23,83 @@ const characters = require('../assets/characters.png');
 
 export function StartScreen({ navigation }: StartScreenProps) {
   const [name, setName] = useState('');
+  const [day, setDay] = useState('');
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
+  const [errors, setErrors] = useState({
+    name: false,
+    day: false,
+    month: false,
+    year: false,
+  });
+
+  const isLeapYear = (value: number) =>
+    (value % 4 === 0 && value % 100 !== 0) || value % 400 === 0;
+
+  const daysInMonth = (monthValue: number, yearValue: number) => {
+    if (monthValue === 2) {
+      return isLeapYear(yearValue) ? 29 : 28;
+    }
+
+    if ([4, 6, 9, 11].includes(monthValue)) {
+      return 30;
+    }
+
+    return 31;
+  };
+
+  const isValidYear = (value: string) => {
+    if (value.length !== 4) {
+      return false;
+    }
+
+    const yearValue = Number.parseInt(value, 10);
+    return !Number.isNaN(yearValue) && yearValue >= 1900;
+  };
+
+  const isValidMonth = (value: string) => {
+    if (value.length !== 2) {
+      return false;
+    }
+
+    const monthValue = Number.parseInt(value, 10);
+    return !Number.isNaN(monthValue) && monthValue >= 1 && monthValue <= 12;
+  };
+
+  const isValidDay = (value: string, monthValue: string, yearValue: string) => {
+    if (value.length !== 2 || !isValidMonth(monthValue) || !isValidYear(yearValue)) {
+      return false;
+    }
+
+    const dayValue = Number.parseInt(value, 10);
+    const monthNumber = Number.parseInt(monthValue, 10);
+    const yearNumber = Number.parseInt(yearValue, 10);
+
+    if (Number.isNaN(dayValue) || dayValue < 1) {
+      return false;
+    }
+
+    return dayValue <= daysInMonth(monthNumber, yearNumber);
+  };
+
+  const isFormValid = name.trim().length > 0 && isValidDay(day, month, year);
 
   const handleStart = () => {
-    navigation.navigate('Dashboard');
+    const nameValid = name.trim().length > 0;
+    const yearValid = isValidYear(year);
+    const monthValid = isValidMonth(month);
+    const dayValid = isValidDay(day, month, year);
+
+    setErrors({
+      name: !nameValid,
+      day: day.trim().length === 0 || (monthValid && yearValid ? !dayValid : false),
+      month: !monthValid,
+      year: !yearValid,
+    });
+
+    if (nameValid && dayValid) {
+      navigation.navigate('Dashboard');
+    }
   };
 
   return (
@@ -44,27 +118,164 @@ export function StartScreen({ navigation }: StartScreenProps) {
 
           <Text style={styles.sectionTitle}>Your Name</Text>
           <TextInput
-            style={[styles.input, styles.cardShadow]}
+            style={[
+              styles.input,
+              styles.cardShadow,
+              errors.name ? styles.inputError : styles.inputDefault,
+            ]}
             placeholder="Enter your name here"
             placeholderTextColor="#A6A6A6"
             value={name}
-            onChangeText={(value) => setName(sanitizeName(value))}
+            onChangeText={(value) => {
+              const nextValue = sanitizeName(value);
+              setName(nextValue);
+              if (nextValue.trim().length > 0) {
+                setErrors((prev) => ({ ...prev, name: false }));
+              }
+            }}
             autoCapitalize="words"
           />
 
           <Text style={styles.birthdateLabel}>Birthdate</Text>
-          <View style={[styles.dateBox, styles.cardShadow]}>
-            <Text style={styles.dateBoxText}>Day</Text>
-          </View>
-          <View style={[styles.dateBox, styles.cardShadow, styles.dateBoxMiddle]}>
-            <Text style={styles.dateBoxText}>Month</Text>
-          </View>
-          <View style={[styles.dateBox, styles.cardShadow, styles.dateBoxRight]}>
-            <Text style={styles.dateBoxText}>Year</Text>
-          </View>
+          <TextInput
+            style={[
+              styles.dateBox,
+              styles.cardShadow,
+              styles.dateInput,
+              errors.day ? styles.inputError : styles.inputDefault,
+            ]}
+            placeholder="Day"
+            placeholderTextColor="#A6A6A6"
+            keyboardType="number-pad"
+            cursorColor="#000000"
+            underlineColorAndroid="transparent"
+            value={day}
+            onChangeText={(value) => {
+              const numericValue = value.replace(/\D/g, '').slice(0, 2);
+              setDay(numericValue);
+              if (numericValue.length === 2 && isValidDay(numericValue, month, year)) {
+                setErrors((prev) => ({ ...prev, day: false }));
+              } else if (numericValue.length > 0) {
+                setErrors((prev) => ({ ...prev, day: false }));
+              }
+            }}
+            onBlur={() => {
+              const paddedValue = day.length === 1 ? day.padStart(2, '0') : day;
+              if (paddedValue !== day) {
+                setDay(paddedValue);
+              }
+
+              if (
+                paddedValue.length === 2 &&
+                isValidMonth(month) &&
+                isValidYear(year) &&
+                !isValidDay(paddedValue, month, year)
+              ) {
+                setDay('');
+                setErrors((prev) => ({ ...prev, day: true }));
+              }
+            }}
+            maxLength={2}
+          />
+          <TextInput
+            style={[
+              styles.dateBox,
+              styles.cardShadow,
+              styles.dateBoxMiddle,
+              styles.dateInput,
+              errors.month ? styles.inputError : styles.inputDefault,
+            ]}
+            placeholder="Month"
+            placeholderTextColor="#A6A6A6"
+            keyboardType="number-pad"
+            cursorColor="#000000"
+            underlineColorAndroid="transparent"
+            value={month}
+            onChangeText={(value) => {
+              const numericValue = value.replace(/\D/g, '').slice(0, 2);
+              setMonth(numericValue);
+              if (numericValue.length === 2 && isValidMonth(numericValue)) {
+                setErrors((prev) => ({ ...prev, month: false }));
+              } else if (numericValue.length > 0) {
+                setErrors((prev) => ({ ...prev, month: false }));
+              }
+            }}
+            onBlur={() => {
+              const paddedValue = month.length === 1 ? month.padStart(2, '0') : month;
+              if (paddedValue !== month) {
+                setMonth(paddedValue);
+              }
+
+              if (paddedValue.length === 2 && !isValidMonth(paddedValue)) {
+                setMonth('');
+                setErrors((prev) => ({ ...prev, month: true }));
+                return;
+              }
+
+              if (
+                day.length > 0 &&
+                isValidYear(year) &&
+                isValidMonth(paddedValue) &&
+                !isValidDay(day, paddedValue, year)
+              ) {
+                setDay('');
+                setErrors((prev) => ({ ...prev, day: true }));
+              }
+            }}
+            maxLength={2}
+          />
+          <TextInput
+            style={[
+              styles.dateBox,
+              styles.cardShadow,
+              styles.dateBoxRight,
+              styles.dateInput,
+              errors.year ? styles.inputError : styles.inputDefault,
+            ]}
+            placeholder="Year"
+            placeholderTextColor="#A6A6A6"
+            keyboardType="number-pad"
+            cursorColor="#000000"
+            underlineColorAndroid="transparent"
+            value={year}
+            onChangeText={(value) => {
+              const numericValue = value.replace(/\D/g, '').slice(0, 4);
+              setYear(numericValue);
+              if (numericValue.length === 4 && isValidYear(numericValue)) {
+                setErrors((prev) => ({ ...prev, year: false }));
+              } else if (numericValue.length > 0) {
+                setErrors((prev) => ({ ...prev, year: false }));
+              }
+            }}
+            onBlur={() => {
+              if (year.length === 4 && !isValidYear(year)) {
+                setYear('');
+                setErrors((prev) => ({ ...prev, year: true }));
+                return;
+              }
+
+              if (
+                day.length > 0 &&
+                isValidMonth(month) &&
+                isValidYear(year) &&
+                !isValidDay(day, month, year)
+              ) {
+                setDay('');
+                setErrors((prev) => ({ ...prev, day: true }));
+              }
+            }}
+            maxLength={4}
+          />
 
           <Pressable style={[styles.startButton, styles.cardShadow]} onPress={handleStart}>
-            <Text style={styles.startButtonText}>START</Text>
+            <Text
+              style={[
+                styles.startButtonText,
+                { color: isFormValid ? '#000000' : '#6E6E6E' },
+              ]}
+            >
+              START
+            </Text>
           </Pressable>
 
           <Text style={styles.footerText}>Take control of your finances</Text>
@@ -130,7 +341,6 @@ const styles = StyleSheet.create({
     width: 328,
     height: 37,
     borderWidth: 1,
-    borderColor: '#B3B3B3',
     borderRadius: 10,
     paddingHorizontal: 12,
     fontSize: 15,
@@ -152,11 +362,8 @@ const styles = StyleSheet.create({
     width: 96,
     height: 37,
     borderWidth: 1,
-    borderColor: '#B3B3B3',
     borderRadius: 10,
     backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   dateBoxMiddle: {
     left: 161,
@@ -164,11 +371,13 @@ const styles = StyleSheet.create({
   dateBoxRight: {
     left: 273,
   },
-  dateBoxText: {
+  dateInput: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#A6A6A6',
     textAlign: 'center',
+    textAlignVertical: 'center',
+    color: '#000000',
+    paddingVertical: 0,
   },
   startButton: {
     position: 'absolute',
@@ -186,16 +395,21 @@ const styles = StyleSheet.create({
   startButtonText: {
     fontSize: 40,
     fontWeight: '700',
-    color: '#000000',
   },
   footerText: {
     position: 'absolute',
     left: 73,
-    top: 849,
+    top: 820,
     fontSize: 20,
     fontWeight: '700',
     color: '#000000',
     textAlign: 'center',
+  },
+  inputError: {
+    borderColor: '#FF8181',
+  },
+  inputDefault: {
+    borderColor: '#B3B3B3',
   },
   cardShadow: {
     shadowColor: '#000',
