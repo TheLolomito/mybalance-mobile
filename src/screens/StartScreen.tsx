@@ -204,8 +204,6 @@ export function StartScreen({ navigation }: StartScreenProps) {
                 const yearValue = Number.parseInt(year, 10);
                 const hasValidMonth = isValidMonth(month);
                 const hasValidYear = isValidYear(year);
-                const maxDay =
-                  hasValidMonth && hasValidYear ? daysInMonth(monthValue, yearValue) : 31;
                 const maxDay = hasValidMonth && hasValidYear
                   ? daysInMonth(monthValue, yearValue)
                   : 31;
