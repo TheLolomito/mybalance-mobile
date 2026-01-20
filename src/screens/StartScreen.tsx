@@ -35,6 +35,7 @@ export function StartScreen({ navigation }: StartScreenProps) {
     month: false,
     year: false,
   });
+  const minYear = 1900;
   const maxYear = 2026;
 
   const isLeapYear = (value: number) =>
@@ -58,6 +59,7 @@ export function StartScreen({ navigation }: StartScreenProps) {
     }
 
     const yearValue = Number.parseInt(value, 10);
+    return !Number.isNaN(yearValue) && yearValue >= minYear && yearValue <= maxYear;
     return !Number.isNaN(yearValue) && yearValue >= 1900 && yearValue <= maxYear;
   };
 
@@ -121,12 +123,33 @@ export function StartScreen({ navigation }: StartScreenProps) {
           <Image source={characters} style={styles.heroImage} resizeMode="contain" />
 
           <Text style={styles.sectionTitle}>Your Name</Text>
-          <TextInput
+          <View
             style={[
               styles.input,
               styles.cardShadow,
+              styles.inputContainer,
               errors.name ? styles.inputError : styles.inputDefault,
             ]}
+          >
+            {name.length === 0 ? (
+              <Text style={styles.namePlaceholder}>Enter your name here</Text>
+            ) : null}
+            <TextInput
+              style={styles.nameInput}
+              placeholder=""
+              cursorColor="#000000"
+              selectionColor="#000000"
+              value={name}
+              onChangeText={(value) => {
+                const nextValue = sanitizeName(value);
+                setName(nextValue);
+                if (nextValue.trim().length > 0) {
+                  setErrors((prev) => ({ ...prev, name: false }));
+                }
+              }}
+              autoCapitalize="words"
+            />
+          </View>
             placeholder="Enter your name here"
             placeholderTextColor="#A6A6A6"
             cursorColor="#000000"
@@ -173,6 +196,21 @@ export function StartScreen({ navigation }: StartScreenProps) {
               }}
               onBlur={() => {
                 setIsDayFocused(false);
+                const dayValue = Number.parseInt(day, 10);
+                if (Number.isNaN(dayValue)) {
+                  return;
+                }
+                const monthValue = Number.parseInt(month, 10);
+                const yearValue = Number.parseInt(year, 10);
+                const hasValidMonth = isValidMonth(month);
+                const hasValidYear = isValidYear(year);
+                const maxDay = hasValidMonth && hasValidYear
+                  ? daysInMonth(monthValue, yearValue)
+                  : 31;
+                const clampedDay = Math.max(1, Math.min(dayValue, maxDay));
+                const formattedDay = clampedDay.toString().padStart(2, '0');
+                setDay(formattedDay);
+                setErrors((prev) => ({ ...prev, day: false }));
                 const paddedValue = day.length === 1 ? day.padStart(2, '0') : day;
                 if (paddedValue !== day) {
                   setDay(paddedValue);
@@ -222,6 +260,21 @@ export function StartScreen({ navigation }: StartScreenProps) {
               }}
               onBlur={() => {
                 setIsMonthFocused(false);
+                const monthValue = Number.parseInt(month, 10);
+                if (Number.isNaN(monthValue)) {
+                  return;
+                }
+                const clampedMonth = Math.max(1, Math.min(monthValue, 12));
+                const formattedMonth = clampedMonth.toString().padStart(2, '0');
+                setMonth(formattedMonth);
+                setErrors((prev) => ({ ...prev, month: false }));
+                if (day.length > 0 && isValidYear(year)) {
+                  const dayValue = Number.parseInt(day, 10);
+                  const maxDay = daysInMonth(clampedMonth, Number.parseInt(year, 10));
+                  const clampedDay = Math.max(1, Math.min(dayValue, maxDay));
+                  const formattedDay = clampedDay.toString().padStart(2, '0');
+                  setDay(formattedDay);
+                  setErrors((prev) => ({ ...prev, day: false }));
                 const paddedValue = month.length === 1 ? month.padStart(2, '0') : month;
                 if (paddedValue !== month) {
                   setMonth(paddedValue);
@@ -285,6 +338,21 @@ export function StartScreen({ navigation }: StartScreenProps) {
               }}
               onBlur={() => {
                 setIsYearFocused(false);
+                const yearValue = Number.parseInt(year, 10);
+                if (Number.isNaN(yearValue)) {
+                  return;
+                }
+                const clampedYear = Math.max(minYear, Math.min(yearValue, maxYear));
+                const formattedYear = clampedYear.toString().padStart(4, '0');
+                setYear(formattedYear);
+                setErrors((prev) => ({ ...prev, year: false }));
+                if (day.length > 0 && isValidMonth(month)) {
+                  const dayValue = Number.parseInt(day, 10);
+                  const maxDay = daysInMonth(Number.parseInt(month, 10), clampedYear);
+                  const clampedDay = Math.max(1, Math.min(dayValue, maxDay));
+                  const formattedDay = clampedDay.toString().padStart(2, '0');
+                  setDay(formattedDay);
+                  setErrors((prev) => ({ ...prev, day: false }));
                 if (year.length === 4 && !isValidYear(year)) {
                   setYear('');
                   setErrors((prev) => ({ ...prev, year: true }));
@@ -380,10 +448,25 @@ const styles = StyleSheet.create({
     height: 37,
     borderWidth: 1,
     borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+  },
+  inputContainer: {
+    justifyContent: 'center',
+  },
+  nameInput: {
+    width: '100%',
+    height: '100%',
     paddingHorizontal: 12,
     fontSize: 15,
     color: '#000000',
-    backgroundColor: '#FFFFFF',
+  },
+  namePlaceholder: {
+    position: 'absolute',
+    left: 12,
+    right: 12,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#A6A6A6',
   },
   birthdateLabel: {
     position: 'absolute',
@@ -402,6 +485,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   dateBoxMiddle: {
     left: 161,
@@ -426,6 +511,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
+    top: 0,
+    bottom: 0,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    color: '#A6A6A6',
+    fontSize: 15,
+    fontWeight: '700',
+    includeFontPadding: false,
     top: '50%',
     transform: [{ translateY: -7.5 }],
     textAlign: 'center',
