@@ -247,56 +247,36 @@ export function StartScreen({ navigation }: StartScreenProps) {
               cursorColor="#000000"
               selectionColor="#000000"
               underlineColorAndroid="transparent"
-              value={month}
-              onFocus={() => setIsMonthFocused(true)}
+              value={day}
+              onFocus={() => setIsDayFocused(true)}
               onChangeText={(value) => {
                 const numericValue = value.replace(/\D/g, '').slice(0, 2);
-                setMonth(numericValue);
-                if (numericValue.length === 2 && isValidMonth(numericValue)) {
-                  setErrors((prev) => ({ ...prev, month: false }));
+                setDay(numericValue);
+                if (numericValue.length === 2 && isValidDay(numericValue, month, year)) {
+                  setErrors((prev) => ({ ...prev, day: false }));
                 } else if (numericValue.length > 0) {
-                  setErrors((prev) => ({ ...prev, month: false }));
+                  setErrors((prev) => ({ ...prev, day: false }));
                 }
               }}
               onBlur={() => {
-                setIsMonthFocused(false);
+                setIsDayFocused(false);
+                const dayValue = Number.parseInt(day, 10);
+                if (Number.isNaN(dayValue)) {
+                  return;
+                }
                 const monthValue = Number.parseInt(month, 10);
-                if (Number.isNaN(monthValue)) {
-                  return;
-                }
-                const clampedMonth = Math.max(1, Math.min(monthValue, 12));
-                const formattedMonth = clampedMonth.toString().padStart(2, '0');
-                setMonth(formattedMonth);
-                setErrors((prev) => ({ ...prev, month: false }));
-                if (day.length > 0 && isValidYear(year)) {
-                  const dayValue = Number.parseInt(day, 10);
-                  const maxDay = daysInMonth(clampedMonth, Number.parseInt(year, 10));
-                  const clampedDay = Math.max(1, Math.min(dayValue, maxDay));
-                  const formattedDay = clampedDay.toString().padStart(2, '0');
-                  setDay(formattedDay);
-                  setErrors((prev) => ({ ...prev, day: false }));
-                const paddedValue = month.length === 1 ? month.padStart(2, '0') : month;
-                if (paddedValue !== month) {
-                  setMonth(paddedValue);
-                }
-
-                if (paddedValue.length === 2 && !isValidMonth(paddedValue)) {
-                  setMonth('');
-                  setErrors((prev) => ({ ...prev, month: true }));
-                  return;
-                }
-
-                if (
-                  day.length > 0 &&
-                  isValidYear(year) &&
-                  isValidMonth(paddedValue) &&
-                  !isValidDay(day, paddedValue, year)
-                ) {
-                  setDay('');
-                  setErrors((prev) => ({ ...prev, day: true }));
-                }
+                const yearValue = Number.parseInt(year, 10);
+                const hasValidMonth = isValidMonth(month);
+                const hasValidYear = isValidYear(year);
+                const maxDay = hasValidMonth && hasValidYear
+                  ? daysInMonth(monthValue, yearValue)
+                  : 31;
+                const clampedDay = Math.max(1, Math.min(dayValue, maxDay));
+                const formattedDay = clampedDay.toString().padStart(2, '0');
+                setDay(formattedDay);
+                setErrors((prev) => ({ ...prev, day: false }));
               }}
-              maxLength=2
+              maxLength={2}
             />
           </View>
           <View
