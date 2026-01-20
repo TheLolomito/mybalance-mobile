@@ -1,42 +1,51 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-const DashboardScreen = () => {
+import type { RootStackParamList } from '../navigation/RootNavigator';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Dashboard'>;
+
+const DashboardScreen = ({ navigation }: Props) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.avatar} />
-          <Text style={styles.title}>MyBalance</Text>
-          <View style={styles.settingsWrapper}>
-            <View style={styles.settingsIcon} />
-          </View>
+        <Text style={styles.title}>MyBalance</Text>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>BETA</Text>
         </View>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => navigation.navigate('Settings')}
+          style={styles.settingsButton}
+        >
+          <Text style={styles.settingsIcon}>⚙</Text>
+        </Pressable>
 
         <Text style={styles.sectionTitle}>Dashboard</Text>
 
-        <View style={[styles.card, styles.mainCard]}>
-          <Text style={styles.cardLabel}>Balance</Text>
-          <Text style={styles.cardValue}>$0.00</Text>
-          <Text style={styles.cardMeta}>+0% month ever month</Text>
-        </View>
+        <View style={styles.balanceCard} />
+        <Text style={styles.balanceLabel}>Balance</Text>
+        <Text style={styles.balanceValue}>$0.00</Text>
+        <Text style={styles.balanceMeta}>+0% month ever month</Text>
 
-        <View style={styles.secondaryRow}>
-          <View style={[styles.card, styles.secondaryCard]}>
-            <Text style={styles.secondaryLabel}>Ingresos</Text>
-            <Text style={styles.secondaryValue}>$0.00</Text>
-            <Text style={styles.cardMeta}>+0% month ever month</Text>
-          </View>
-          <View style={[styles.card, styles.secondaryCard]}>
-            <Text style={styles.secondaryLabel}>Gastos</Text>
-            <Text style={styles.secondaryValue}>$0.00</Text>
-            <Text style={styles.cardMeta}>-0% month ever month</Text>
-          </View>
-        </View>
-      </View>
+        <View style={styles.monthlyIncomeCard} />
+        <Text style={styles.monthlyIncomeTitle}>Monthly income</Text>
+        <Text style={styles.monthlyIncomeValue}>$0.00</Text>
+        <Text style={styles.monthlyIncomeMeta}>+0% month ever month</Text>
 
-      <View style={styles.floatingButton}>
-        <Text style={styles.floatingButtonText}>+</Text>
+        <View style={styles.monthlyExpensesCard} />
+        <Text style={styles.monthlyExpensesTitle}>Monthly expenses</Text>
+        <Text style={styles.monthlyExpensesValue}>$0.00</Text>
+        <Text style={styles.monthlyExpensesMeta}>-0% month ever month</Text>
+
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => navigation.navigate('NewMovement')}
+          style={styles.addButton}
+        >
+          <Text style={styles.addButtonText}>+</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -49,118 +58,191 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 6,
-  },
-  avatar: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: '#F2F2F2',
-    borderWidth: 1,
-    borderColor: '#D9D9D9',
+    position: 'relative',
+    backgroundColor: '#FFFFFF',
   },
   title: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: 27,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  settingsWrapper: {
-    width: 34,
-    alignItems: 'center',
-  },
-  settingsIcon: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: '#B0B0B0',
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111111',
-    marginTop: 16,
-    marginBottom: 12,
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#D9D9D9',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 5,
-  },
-  cardLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111111',
-  },
-  cardValue: {
-    fontSize: 40,
+    position: 'absolute',
+    left: 117,
+    top: 84,
+    fontSize: 36,
     fontWeight: '700',
     color: '#000000',
-    marginTop: 8,
   },
-  cardMeta: {
-    fontSize: 12,
-    color: '#9A9A9A',
-    marginTop: 6,
+  badge: {
+    position: 'absolute',
+    left: 253,
+    top: 70,
+    width: 59,
+    height: 23,
+    borderRadius: 12,
+    backgroundColor: '#FF8181',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  mainCard: {
-    minHeight: 130,
-  },
-  secondaryRow: {
-    flexDirection: 'row',
-    gap: 16,
-    marginTop: 16,
-  },
-  secondaryCard: {
-    flex: 1,
-  },
-  secondaryLabel: {
+  badgeText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#111111',
+    color: '#000000',
   },
-  secondaryValue: {
+  settingsButton: {
+    position: 'absolute',
+    left: 351,
+    top: 77,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#F4F4F4',
+    borderWidth: 2,
+    borderColor: '#B3B3B3',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  settingsIcon: {
+    fontSize: 22,
+    color: '#B3B3B3',
+  },
+  sectionTitle: {
+    position: 'absolute',
+    left: 37,
+    top: 178,
     fontSize: 24,
     fontWeight: '700',
     color: '#000000',
-    marginTop: 8,
   },
-  floatingButton: {
+  balanceCard: {
     position: 'absolute',
-    bottom: 30,
-    alignSelf: 'center',
-    width: 64,
-    height: 64,
-    borderRadius: 12,
+    left: 37,
+    top: 218,
+    width: 356,
+    height: 131,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#D9D9D9',
+    borderColor: '#B3B3B3',
+    borderRadius: 8,
+    shadowColor: '#000000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  balanceLabel: {
+    position: 'absolute',
+    left: 64,
+    top: 237,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  balanceValue: {
+    position: 'absolute',
+    left: 64,
+    top: 264,
+    fontSize: 40,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  balanceMeta: {
+    position: 'absolute',
+    left: 64,
+    top: 319,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#767676',
+  },
+  monthlyIncomeCard: {
+    position: 'absolute',
+    left: 37,
+    top: 377,
+    width: 170,
+    height: 100,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#B3B3B3',
+    borderRadius: 8,
+    shadowColor: '#000000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  monthlyIncomeTitle: {
+    position: 'absolute',
+    left: 53,
+    top: 389,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  monthlyIncomeValue: {
+    position: 'absolute',
+    left: 53,
+    top: 412,
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  monthlyIncomeMeta: {
+    position: 'absolute',
+    left: 53,
+    top: 448,
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#767676',
+  },
+  monthlyExpensesCard: {
+    position: 'absolute',
+    left: 219,
+    top: 377,
+    width: 170,
+    height: 100,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#B3B3B3',
+    borderRadius: 8,
+    shadowColor: '#000000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  monthlyExpensesTitle: {
+    position: 'absolute',
+    left: 236,
+    top: 389,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  monthlyExpensesValue: {
+    position: 'absolute',
+    left: 236,
+    top: 412,
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  monthlyExpensesMeta: {
+    position: 'absolute',
+    left: 236,
+    top: 448,
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#767676',
+  },
+  addButton: {
+    position: 'absolute',
+    left: 191,
+    top: 746,
+    width: 50,
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 5,
   },
-  floatingButtonText: {
-    fontSize: 36,
+  addButtonText: {
+    fontSize: 40,
     fontWeight: '700',
-    color: '#4A4A4A',
+    color: '#000000',
   },
 });
 
