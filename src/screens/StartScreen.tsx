@@ -60,6 +60,7 @@ export function StartScreen({ navigation }: StartScreenProps) {
 
     const yearValue = Number.parseInt(value, 10);
     return !Number.isNaN(yearValue) && yearValue >= minYear && yearValue <= maxYear;
+    return !Number.isNaN(yearValue) && yearValue >= 1900 && yearValue <= maxYear;
   };
 
   const isValidMonth = (value: string) => {
@@ -149,6 +150,20 @@ export function StartScreen({ navigation }: StartScreenProps) {
               autoCapitalize="words"
             />
           </View>
+            placeholder="Enter your name here"
+            placeholderTextColor="#A6A6A6"
+            cursorColor="#000000"
+            selectionColor="#000000"
+            value={name}
+            onChangeText={(value) => {
+              const nextValue = sanitizeName(value);
+              setName(nextValue);
+              if (nextValue.trim().length > 0) {
+                setErrors((prev) => ({ ...prev, name: false }));
+              }
+            }}
+            autoCapitalize="words"
+          />
 
           <Text style={styles.birthdateLabel}>Birthdate</Text>
           <View
@@ -191,10 +206,27 @@ export function StartScreen({ navigation }: StartScreenProps) {
                 const hasValidYear = isValidYear(year);
                 const maxDay =
                   hasValidMonth && hasValidYear ? daysInMonth(monthValue, yearValue) : 31;
+                const maxDay = hasValidMonth && hasValidYear
+                  ? daysInMonth(monthValue, yearValue)
+                  : 31;
                 const clampedDay = Math.max(1, Math.min(dayValue, maxDay));
                 const formattedDay = clampedDay.toString().padStart(2, '0');
                 setDay(formattedDay);
                 setErrors((prev) => ({ ...prev, day: false }));
+                const paddedValue = day.length === 1 ? day.padStart(2, '0') : day;
+                if (paddedValue !== day) {
+                  setDay(paddedValue);
+                }
+
+                if (
+                  paddedValue.length === 2 &&
+                  isValidMonth(month) &&
+                  isValidYear(year) &&
+                  !isValidDay(paddedValue, month, year)
+                ) {
+                  setDay('');
+                  setErrors((prev) => ({ ...prev, day: true }));
+                }
               }}
               maxLength={2}
             />
@@ -246,6 +278,34 @@ export function StartScreen({ navigation }: StartScreenProps) {
                   setDay(formattedDay);
                   setErrors((prev) => ({ ...prev, day: false }));
                 }
+              value={day}
+              onFocus={() => setIsDayFocused(true)}
+              onChangeText={(value) => {
+                const numericValue = value.replace(/\D/g, '').slice(0, 2);
+                setDay(numericValue);
+                if (numericValue.length === 2 && isValidDay(numericValue, month, year)) {
+                  setErrors((prev) => ({ ...prev, day: false }));
+                } else if (numericValue.length > 0) {
+                  setErrors((prev) => ({ ...prev, day: false }));
+                }
+              }}
+              onBlur={() => {
+                setIsDayFocused(false);
+                const dayValue = Number.parseInt(day, 10);
+                if (Number.isNaN(dayValue)) {
+                  return;
+                }
+                const monthValue = Number.parseInt(month, 10);
+                const yearValue = Number.parseInt(year, 10);
+                const hasValidMonth = isValidMonth(month);
+                const hasValidYear = isValidYear(year);
+                const maxDay = hasValidMonth && hasValidYear
+                  ? daysInMonth(monthValue, yearValue)
+                  : 31;
+                const clampedDay = Math.max(1, Math.min(dayValue, maxDay));
+                const formattedDay = clampedDay.toString().padStart(2, '0');
+                setDay(formattedDay);
+                setErrors((prev) => ({ ...prev, day: false }));
               }}
               maxLength={2}
             />
@@ -272,6 +332,14 @@ export function StartScreen({ navigation }: StartScreenProps) {
               onFocus={() => setIsYearFocused(true)}
               onChangeText={(value) => {
                 const numericValue = value.replace(/\D/g, '').slice(0, 4);
+                if (numericValue.length === 4) {
+                  const yearValue = Number.parseInt(numericValue, 10);
+                  if (!Number.isNaN(yearValue) && yearValue > maxYear) {
+                    setYear('');
+                    setErrors((prev) => ({ ...prev, year: true }));
+                    return;
+                  }
+                }
                 setYear(numericValue);
                 if (numericValue.length === 4 && isValidYear(numericValue)) {
                   setErrors((prev) => ({ ...prev, year: false }));
@@ -296,6 +364,20 @@ export function StartScreen({ navigation }: StartScreenProps) {
                   const formattedDay = clampedDay.toString().padStart(2, '0');
                   setDay(formattedDay);
                   setErrors((prev) => ({ ...prev, day: false }));
+                if (year.length === 4 && !isValidYear(year)) {
+                  setYear('');
+                  setErrors((prev) => ({ ...prev, year: true }));
+                  return;
+                }
+
+                if (
+                  day.length > 0 &&
+                  isValidMonth(month) &&
+                  isValidYear(year) &&
+                  !isValidDay(day, month, year)
+                ) {
+                  setDay('');
+                  setErrors((prev) => ({ ...prev, day: true }));
                 }
               }}
               maxLength={4}
@@ -448,6 +530,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     includeFontPadding: false,
+    top: '50%',
+    transform: [{ translateY: -7.5 }],
+    textAlign: 'center',
+    color: '#A6A6A6',
+    fontSize: 15,
+    fontWeight: '700',
     pointerEvents: 'none',
   },
   startButton: {
