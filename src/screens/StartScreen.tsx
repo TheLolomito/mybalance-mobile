@@ -296,7 +296,7 @@ export function StartScreen({ navigation }: StartScreenProps) {
                   setErrors((prev) => ({ ...prev, day: true }));
                 }
               }}
-              maxLength={2}
+              maxLength=2
             />
           </View>
           <View
