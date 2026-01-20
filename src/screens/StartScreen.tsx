@@ -26,12 +26,16 @@ export function StartScreen({ navigation }: StartScreenProps) {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
+  const [isDayFocused, setIsDayFocused] = useState(false);
+  const [isMonthFocused, setIsMonthFocused] = useState(false);
+  const [isYearFocused, setIsYearFocused] = useState(false);
   const [errors, setErrors] = useState({
     name: false,
     day: false,
     month: false,
     year: false,
   });
+  const maxYear = 2026;
 
   const isLeapYear = (value: number) =>
     (value % 4 === 0 && value % 100 !== 0) || value % 400 === 0;
@@ -54,7 +58,7 @@ export function StartScreen({ navigation }: StartScreenProps) {
     }
 
     const yearValue = Number.parseInt(value, 10);
-    return !Number.isNaN(yearValue) && yearValue >= 1900;
+    return !Number.isNaN(yearValue) && yearValue >= 1900 && yearValue <= maxYear;
   };
 
   const isValidMonth = (value: string) => {
@@ -125,6 +129,8 @@ export function StartScreen({ navigation }: StartScreenProps) {
             ]}
             placeholder="Enter your name here"
             placeholderTextColor="#A6A6A6"
+            cursorColor="#000000"
+            selectionColor="#000000"
             value={name}
             onChangeText={(value) => {
               const nextValue = sanitizeName(value);
@@ -137,135 +143,167 @@ export function StartScreen({ navigation }: StartScreenProps) {
           />
 
           <Text style={styles.birthdateLabel}>Birthdate</Text>
-          <TextInput
+          <View
             style={[
               styles.dateBox,
               styles.cardShadow,
-              styles.dateInput,
               errors.day ? styles.inputError : styles.inputDefault,
             ]}
-            placeholder="Day"
-            placeholderTextColor="#A6A6A6"
-            keyboardType="number-pad"
-            cursorColor="#000000"
-            underlineColorAndroid="transparent"
-            value={day}
-            onChangeText={(value) => {
-              const numericValue = value.replace(/\D/g, '').slice(0, 2);
-              setDay(numericValue);
-              if (numericValue.length === 2 && isValidDay(numericValue, month, year)) {
-                setErrors((prev) => ({ ...prev, day: false }));
-              } else if (numericValue.length > 0) {
-                setErrors((prev) => ({ ...prev, day: false }));
-              }
-            }}
-            onBlur={() => {
-              const paddedValue = day.length === 1 ? day.padStart(2, '0') : day;
-              if (paddedValue !== day) {
-                setDay(paddedValue);
-              }
+          >
+            {!isDayFocused && day.length === 0 ? (
+              <Text style={styles.datePlaceholder}>Day</Text>
+            ) : null}
+            <TextInput
+              style={styles.dateInput}
+              placeholder=""
+              keyboardType="number-pad"
+              cursorColor="#000000"
+              selectionColor="#000000"
+              underlineColorAndroid="transparent"
+              value={day}
+              onFocus={() => setIsDayFocused(true)}
+              onChangeText={(value) => {
+                const numericValue = value.replace(/\D/g, '').slice(0, 2);
+                setDay(numericValue);
+                if (numericValue.length === 2 && isValidDay(numericValue, month, year)) {
+                  setErrors((prev) => ({ ...prev, day: false }));
+                } else if (numericValue.length > 0) {
+                  setErrors((prev) => ({ ...prev, day: false }));
+                }
+              }}
+              onBlur={() => {
+                setIsDayFocused(false);
+                const paddedValue = day.length === 1 ? day.padStart(2, '0') : day;
+                if (paddedValue !== day) {
+                  setDay(paddedValue);
+                }
 
-              if (
-                paddedValue.length === 2 &&
-                isValidMonth(month) &&
-                isValidYear(year) &&
-                !isValidDay(paddedValue, month, year)
-              ) {
-                setDay('');
-                setErrors((prev) => ({ ...prev, day: true }));
-              }
-            }}
-            maxLength={2}
-          />
-          <TextInput
+                if (
+                  paddedValue.length === 2 &&
+                  isValidMonth(month) &&
+                  isValidYear(year) &&
+                  !isValidDay(paddedValue, month, year)
+                ) {
+                  setDay('');
+                  setErrors((prev) => ({ ...prev, day: true }));
+                }
+              }}
+              maxLength={2}
+            />
+          </View>
+          <View
             style={[
               styles.dateBox,
               styles.cardShadow,
               styles.dateBoxMiddle,
-              styles.dateInput,
               errors.month ? styles.inputError : styles.inputDefault,
             ]}
-            placeholder="Month"
-            placeholderTextColor="#A6A6A6"
-            keyboardType="number-pad"
-            cursorColor="#000000"
-            underlineColorAndroid="transparent"
-            value={month}
-            onChangeText={(value) => {
-              const numericValue = value.replace(/\D/g, '').slice(0, 2);
-              setMonth(numericValue);
-              if (numericValue.length === 2 && isValidMonth(numericValue)) {
-                setErrors((prev) => ({ ...prev, month: false }));
-              } else if (numericValue.length > 0) {
-                setErrors((prev) => ({ ...prev, month: false }));
-              }
-            }}
-            onBlur={() => {
-              const paddedValue = month.length === 1 ? month.padStart(2, '0') : month;
-              if (paddedValue !== month) {
-                setMonth(paddedValue);
-              }
+          >
+            {!isMonthFocused && month.length === 0 ? (
+              <Text style={styles.datePlaceholder}>Month</Text>
+            ) : null}
+            <TextInput
+              style={styles.dateInput}
+              placeholder=""
+              keyboardType="number-pad"
+              cursorColor="#000000"
+              selectionColor="#000000"
+              underlineColorAndroid="transparent"
+              value={month}
+              onFocus={() => setIsMonthFocused(true)}
+              onChangeText={(value) => {
+                const numericValue = value.replace(/\D/g, '').slice(0, 2);
+                setMonth(numericValue);
+                if (numericValue.length === 2 && isValidMonth(numericValue)) {
+                  setErrors((prev) => ({ ...prev, month: false }));
+                } else if (numericValue.length > 0) {
+                  setErrors((prev) => ({ ...prev, month: false }));
+                }
+              }}
+              onBlur={() => {
+                setIsMonthFocused(false);
+                const paddedValue = month.length === 1 ? month.padStart(2, '0') : month;
+                if (paddedValue !== month) {
+                  setMonth(paddedValue);
+                }
 
-              if (paddedValue.length === 2 && !isValidMonth(paddedValue)) {
-                setMonth('');
-                setErrors((prev) => ({ ...prev, month: true }));
-                return;
-              }
+                if (paddedValue.length === 2 && !isValidMonth(paddedValue)) {
+                  setMonth('');
+                  setErrors((prev) => ({ ...prev, month: true }));
+                  return;
+                }
 
-              if (
-                day.length > 0 &&
-                isValidYear(year) &&
-                isValidMonth(paddedValue) &&
-                !isValidDay(day, paddedValue, year)
-              ) {
-                setDay('');
-                setErrors((prev) => ({ ...prev, day: true }));
-              }
-            }}
-            maxLength={2}
-          />
-          <TextInput
+                if (
+                  day.length > 0 &&
+                  isValidYear(year) &&
+                  isValidMonth(paddedValue) &&
+                  !isValidDay(day, paddedValue, year)
+                ) {
+                  setDay('');
+                  setErrors((prev) => ({ ...prev, day: true }));
+                }
+              }}
+              maxLength={2}
+            />
+          </View>
+          <View
             style={[
               styles.dateBox,
               styles.cardShadow,
               styles.dateBoxRight,
-              styles.dateInput,
               errors.year ? styles.inputError : styles.inputDefault,
             ]}
-            placeholder="Year"
-            placeholderTextColor="#A6A6A6"
-            keyboardType="number-pad"
-            cursorColor="#000000"
-            underlineColorAndroid="transparent"
-            value={year}
-            onChangeText={(value) => {
-              const numericValue = value.replace(/\D/g, '').slice(0, 4);
-              setYear(numericValue);
-              if (numericValue.length === 4 && isValidYear(numericValue)) {
-                setErrors((prev) => ({ ...prev, year: false }));
-              } else if (numericValue.length > 0) {
-                setErrors((prev) => ({ ...prev, year: false }));
-              }
-            }}
-            onBlur={() => {
-              if (year.length === 4 && !isValidYear(year)) {
-                setYear('');
-                setErrors((prev) => ({ ...prev, year: true }));
-                return;
-              }
+          >
+            {!isYearFocused && year.length === 0 ? (
+              <Text style={styles.datePlaceholder}>Year</Text>
+            ) : null}
+            <TextInput
+              style={styles.dateInput}
+              placeholder=""
+              keyboardType="number-pad"
+              cursorColor="#000000"
+              selectionColor="#000000"
+              underlineColorAndroid="transparent"
+              value={year}
+              onFocus={() => setIsYearFocused(true)}
+              onChangeText={(value) => {
+                const numericValue = value.replace(/\D/g, '').slice(0, 4);
+                if (numericValue.length === 4) {
+                  const yearValue = Number.parseInt(numericValue, 10);
+                  if (!Number.isNaN(yearValue) && yearValue > maxYear) {
+                    setYear('');
+                    setErrors((prev) => ({ ...prev, year: true }));
+                    return;
+                  }
+                }
+                setYear(numericValue);
+                if (numericValue.length === 4 && isValidYear(numericValue)) {
+                  setErrors((prev) => ({ ...prev, year: false }));
+                } else if (numericValue.length > 0) {
+                  setErrors((prev) => ({ ...prev, year: false }));
+                }
+              }}
+              onBlur={() => {
+                setIsYearFocused(false);
+                if (year.length === 4 && !isValidYear(year)) {
+                  setYear('');
+                  setErrors((prev) => ({ ...prev, year: true }));
+                  return;
+                }
 
-              if (
-                day.length > 0 &&
-                isValidMonth(month) &&
-                isValidYear(year) &&
-                !isValidDay(day, month, year)
-              ) {
-                setDay('');
-                setErrors((prev) => ({ ...prev, day: true }));
-              }
-            }}
-            maxLength={4}
-          />
+                if (
+                  day.length > 0 &&
+                  isValidMonth(month) &&
+                  isValidYear(year) &&
+                  !isValidDay(day, month, year)
+                ) {
+                  setDay('');
+                  setErrors((prev) => ({ ...prev, day: true }));
+                }
+              }}
+              maxLength={4}
+            />
+          </View>
 
           <Pressable style={[styles.startButton, styles.cardShadow]} onPress={handleStart}>
             <Text
@@ -372,6 +410,9 @@ const styles = StyleSheet.create({
     left: 273,
   },
   dateInput: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
     fontSize: 15,
     fontWeight: '700',
     textAlign: 'center',
@@ -380,9 +421,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     paddingVertical: 0,
     includeFontPadding: false,
+  },
+  datePlaceholder: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: '50%',
+    transform: [{ translateY: -7.5 }],
     textAlign: 'center',
-    color: '#000000',
-    paddingVertical: 0,
+    color: '#A6A6A6',
+    fontSize: 15,
+    fontWeight: '700',
+    pointerEvents: 'none',
   },
   startButton: {
     position: 'absolute',
